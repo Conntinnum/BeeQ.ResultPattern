@@ -1,4 +1,5 @@
 ﻿using BeeQ.ResultPattern;
+using System.ComponentModel;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
@@ -206,5 +207,65 @@ public static class IExtensions
         return query;
     }
 
+    #endregion
+
+    #region Error Response
+
+    /// <summary>
+    /// Devuelve un Response con el código de error y la descripción del Enum
+    /// </summary>
+    /// <remarks>
+    /// Asegurarse de que la anumeración implemente el atributo [ErrorResponseEnum] y que cada valor tenga un [Description("...")]
+    /// </remarks>
+    public static Response<T> GetError<T>(this Enum value, object? tag = null)
+    {
+        var type = value.GetType();
+
+        var attrE = (ErrorResponseEnumAttribute?)Attribute.GetCustomAttribute(type, typeof(ErrorResponseEnumAttribute)) ?? throw new InvalidOperationException($"El enum {type.Name} no está marcado con [ErrorResponseEnum].");
+
+        var fld = type.GetField(value.ToString());
+        var attr = (DescriptionAttribute?)Attribute.GetCustomAttribute(fld!, typeof(DescriptionAttribute));
+        var desc = attr?.Description ?? "(empty)";
+
+        return ErrorBuilder.Response<T>(attrE?.Entity ?? "XXX", attrE?.Entity ?? "X", Convert.ToInt32(value), desc, tag: tag);
+    }
+
+    /// <summary>
+    /// Devuelve un Response con el código de error y la descripción del Enum
+    /// </summary>
+    /// <remarks>
+    /// Asegurarse de que la anumeración implemente el atributo [ErrorResponseEnum] y que cada valor tenga un [Description("...")]
+    /// </remarks>
+    public static Response GetError(this Enum value, object? tag = null)
+    {
+        var type = value.GetType();
+
+        var attrE = (ErrorResponseEnumAttribute?)Attribute.GetCustomAttribute(type, typeof(ErrorResponseEnumAttribute)) ?? throw new InvalidOperationException($"El enum {type.Name} no está marcado con [ErrorResponseEnum].");
+
+        var fld = type.GetField(value.ToString());
+        var attr = (DescriptionAttribute?)Attribute.GetCustomAttribute(fld!, typeof(DescriptionAttribute));
+        var desc = attr?.Description ?? "(empty)";
+
+        return ErrorBuilder.Response(attrE?.Entity ?? "XXX", attrE?.Entity ?? "X", Convert.ToInt32(value), desc, tag: tag);
+    }
+
+    /// <summary>
+    /// Devuelve un PaginatedResponse con el código de error y la descripción del Enum
+    /// </summary>
+    /// <remarks>
+    /// Asegurarse de que la anumeración implemente el atributo [ErrorResponseEnum] y que cada valor tenga un [Description("...")]
+    /// </remarks>
+    public static PaginatedResponse<T> GetPaginatedError<T>(this Enum value, object? tag = null)
+    {
+        var type = value.GetType();
+
+        var attrE = (ErrorResponseEnumAttribute?)Attribute.GetCustomAttribute(type, typeof(ErrorResponseEnumAttribute)) ?? throw new InvalidOperationException($"El enum {type.Name} no está marcado con [ErrorResponseEnum].");
+
+        var fld = type.GetField(value.ToString());
+        var attr = (DescriptionAttribute?)Attribute.GetCustomAttribute(fld!, typeof(DescriptionAttribute));
+        var desc = attr?.Description ?? "(empty)";
+
+        return ErrorBuilder.PaginatedResponse<T>(attrE?.Entity ?? "XXX", attrE?.Entity ?? "X", Convert.ToInt32(value), desc, tag: tag);
+    }
     #endregion
 }
