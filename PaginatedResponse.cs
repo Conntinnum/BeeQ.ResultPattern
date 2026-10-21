@@ -156,4 +156,17 @@ public class PaginatedResponse<T> : Response<IEnumerable<T>>
 
         return res;
     }
+
+    public new void Deconstruct(out bool success, out IEnumerable<T>? data)
+    {
+        success = Success;
+        data = Data;
+    }
+
+    public new void Deconstruct(out bool success, out IEnumerable<T>? data, out ResponseMessageList messages)
+    {
+        success = Success;
+        data = Data;
+        messages = Messages;
+    }
 }

@@ -587,6 +587,19 @@ public class Response<T> : Response
     {
         return System.Text.Json.JsonSerializer.Serialize(this);
     }
+
+    public void Deconstruct(out bool success, out T? route)
+    {
+        success = Success;
+        route = Data;
+    }
+
+    public void Deconstruct(out bool success, out T? route, out ResponseMessageList messages)
+    {
+        success = Success;
+        route = Data;
+        messages = Messages;
+    }
 }
 
 
